@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}949公車路線{% endblock %}
+{% block content %}
+<main>
+    <div class="businfo-title">949</div>
+    <div class="direction-area">
+        <button id="direction-go" type="button" class="direction-btn active">往捷運古亭站</button>
+        <button id="direction-back" type="button" class="direction-btn">往深坑</button>
+    </div>
+    <div class="source-switch-area">
+        <button id="source-bus" class="source-btn active">官方資料</button>
+        <button id="source-model" class="source-btn">坐坐巴資料</button>
+    </div>
+    <div class="map_container">
+        <div class="route-map" id="route-map"></div>
+    </div>
+</main>
+
+<script>
+    const allStopNames = {
+        "949": {
+            "0": [// To MRT Guting Station (往捷運古亭站)
+                ["head", "石碇高中", "八分寮", "北深松柏街口", "僑新新村", "土庫", "賴仲坑", "翠谷山莊", "深美橋", "right_down"],
+                ["left_down", "台新工廠", "深坑郵局", "深坑", "深坑區公所", "深坑國小", "變電所", "草地頭", "down_left"],
+                ["down_right", "東南科技大學", "萬順寮", "草地尾", "富德里", "文和橋", "富德", "象頭埔", "right_down"],
+                ["left_down", "新民國小", "臺大計資中心", "大安運動中心", "自來水處(辛亥)", "風動石", "石壁坑", "萬福橋", "down_left"],
+                ["down_right", "捷運台電大樓站", "羅斯福浦城街口", "羅斯福金門街口", "捷運古亭站(和平)", "師大", "師大綜合大樓", "溫州街口", "right_down"],
+                ["space", "space", "space", "space", "space", "space", "tail", "龍門國中(辛亥路口)", "大安森林公園", "down_left"]
+            ],
+            "1": [// To Shenkeng (往深坑)
+                ["head", "臺大計資中心", "臺大國青大樓", "自來水處(辛亥)", "風動石", "石壁坑", "萬福橋", "象頭埔", "富德", "right_down"],
+                ["left_down", "深坑郵局", "台新工廠", "東南科技大學", "萬順寮", "草地尾", "富德里", "文和橋", "down_left"],
+                ["down_right", "深坑", "深坑區公所", "深坑國小", "變電所", "草地頭", "深美橋", "翠谷山莊", "right_down"],
+                ["space", "space", "tail", "石碇高中", "八分寮", "北深松柏街口", "僑新新村", "土庫", "賴仲坑", "down_left"]
+            ]
+        }
+    };
+
+    let currentRoute = "949";
+    let currentDirection = "0";
+    let intervalId = null;
+
+</script>
+
+<script src="{{ url_for('static', filename='api_switch.js') }}"></script>
+<script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+<script>
+
+    document.getElementById('direction-go').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("949", "0", true);
+            startAutoUpdate();
+        }
+    });
+    document.getElementById('direction-back').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("949", "1", true);
+            startAutoUpdate();
+        }
+    });
+
+    // 預設載入去程
+    fetchEta("949", "0", true);
+    startAutoUpdate();
+</script>
+{% endblock %}

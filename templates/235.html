@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}235公車路線{% endblock %}
+{% block content %}
+        <main>
+            <div class="businfo-title">235</div>
+            <div class="direction-area">
+                <button id="direction-go" type="button" class="direction-btn active">往國父紀念館</button>
+                <button id="direction-back" type="button" class="direction-btn">往新莊</button>
+            </div>
+            <div class="map_container">
+                <div class="route-map" id="route-map"></div>
+            </div>
+        </main>
+    
+        <script>
+        const allStopNames = {
+            "235": {
+                "0": [// To National Dr. Sun Yat-sen Memorial Hall (往國父紀念館)
+                    ["head","西盛", "東方之星", "西盛館", "家麒新天地", "正豐", "大唐江山", "民安西路403巷口", "光華街口", "right_down"], 
+                    ["left_down", "民安路", "民安陸橋", "福祿新城二", "福祿新城一", "光華國小(民安西路)", "光明里", "新寶社區","down_left"], 
+                    ["down_right","後港社區", "建福路口", "宏泰社區", "三洋", "營盤口", "捷運輔大站", "盲人重建院","right_down"],
+                    ["left_down", "頭前", "捷運頭前庄站", "保元宮", "新莊國小", "捷運新莊站(新莊郵局)", "新泰路口", "海山里","down_left"],
+                    ["down_right","金陵女中", "中興街口", "捷運先嗇宮站", "五谷王廟", "重新大橋", "西門國小(臺大醫院北護分院)", "臺北護理健康大學","right_down"],
+                    ["left_down","市立大學附小", "一女中(公園)", "一女中(貴陽)", "東吳大學城中校區", "臺北市憲兵隊", "西門市場(漢中)", "內江街","down_left"],
+                    ["down_right","南門", "自來水西分處(寧波)", "聯合醫院婦幼院區一", "南昌家具街", "捷運古亭站(和平)", "師大", "師大綜合大樓","right_down"],
+                    ["left_down","全安里", "臥龍街", "國立臺北教育大學", "復興南路口", "龍門國中(和平)", "大安森林公園", "溫州街口","down_left"],
+                    ["down_right","立人國際國中小學", "文昌街口", "捷運信義安和站(安和)", "仁愛國中", "敦化安和路口", "捷運忠孝敦化站", "阿波羅大廈","right_down"],                    
+                    ["space","space","space","space","space","space","space","tail","交通部觀光署","down_left"]
+                ],
+                "1": [// To Xinzhuang (往新莊)
+                    ["head","國父紀念館", "仁愛延吉街口", "仁愛國泰醫院", "仁愛安和路口", "仁愛安和路口", "仁愛國小", "捷運信義安和站(安和)", "文昌街口", "right_down"], 
+                    ["left_down", "國北教大實小", "復興南路口", "國立臺北教育大學", "臥龍街", "安和路口", "全安里", "立人國際國中小學","down_left"], 
+                    ["down_right","龍門國中(和平)", "大安森林公園", "溫州街口", "師大綜合大樓", "師大", "捷運古亭站(和平)", "南昌家具街","right_down"],
+                    ["left_down", "西門市場(成都)", "衡陽路", "一女中(貴陽)", "一女中(公園)", "南門", "南昌路", "聯合醫院婦幼院區一","down_left"],
+                    ["down_right","西門國小", "重新大橋", "五谷王廟", "捷運先嗇宮站", "中興街口", "金陵女中", "頭前","right_down"],
+                    ["left_down","捷運輔大站", "盲人重建院", "海山里", "新泰路口", "捷運新莊站(新莊郵局)", "大眾廟", "捷運頭前庄站","down_left"],
+                    ["down_right","營盤口", "三洋(建福路)", "宏泰社區", "建福路口", "後港社區", "民安路", "民安陸橋","right_down"],
+                    ["left_down","民安西路403巷口", "光華街口", "新寶社區", "光明里", "光華國小(民安西路)", "福祿新城一", "福祿新城二","down_left"],
+                    ["down_right","大唐江山", "正豐", "西盛一", "家麒新天地", "西盛館", "東方之星", "西盛","tail","space"],                    
+                ]
+            }
+        };
+
+        let currentRoute = "235";
+        let currentDirection = "0";
+        let intervalId = null;
+
+        </script>
+        
+        <script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+        <script>
+        document.getElementById('direction-go').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("235", "0", true);
+                startAutoUpdate();
+            }
+        });
+        document.getElementById('direction-back').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("235", "1", true);
+                startAutoUpdate();
+            }
+        });
+
+        // 預設載入去程
+        fetchEta("235", "0", true);
+        startAutoUpdate();
+        </script>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}254公車路線{% endblock %}
+{% block content %}
+<main>
+    <div class="businfo-title">254</div>
+    <div class="direction-area">
+        <button id="direction-go" type="button" class="direction-btn active">往民生社區</button>
+        <button id="direction-back" type="button" class="direction-btn">往大鵬新村</button>
+    </div>
+    <div class="map_container">
+        <div class="route-map" id="route-map"></div>
+    </div>
+</main>
+
+<script>
+    const allStopNames = {
+        "254": {
+            "0": [// To Minsheng Community (往民生社區)
+                ["head", "中正環河路口", "捷運秀朗橋站", "尖山腳", "景平路景德街口", "捷運景平站", "東森廣場", "智光商職", "中興二村", "right_down"],
+                ["left_down", "臺灣科技大學", "公館", "福和橋(永元路)", "永元路", "秀朗國小", "得和路", "中興新村", "down_left"],
+                ["down_right", "臺大癌醫(基隆路)", "基隆長興街口", "和平高中", "捷運六張犁站(基隆路)", "喬治商職", "三興國小(臨江街觀光夜市)", "光復南路口", "right_down"],
+                ["left_down", "南京新村", "榮民服務處", "臺北市區監理所(光復)", "捷運國父紀念館站(光復)", "國父紀念館", "市民住宅", "三張犁", "down_left"],
+                ["down_right", "三軍總醫院松山分院", "長壽公園", "健康新城", "三民健康路口(西松高中)", "三民路", "民生社區活動中心", "tail", "space", "space"]
+            ],
+            "1": [// To Da Peng New Village (往大鵬新村)
+                ["head", "聯合二村", "介壽國中", "公教住宅", "富錦街口", "松山機場", "民生敦化路口", "長春敦化路口", "臺北小巨蛋", "right_down"],
+                ["left_down", "捷運忠孝新生站", "光華商場", "長安松江路口", "捷運松江南京站", "南京建國路口", "南京龍江路口", "捷運南京復興站", "down_left"],
+                ["down_right", "仁愛新生路口", "信義新生路口", "金華新生路口", "溫州街口", "師大綜合大樓", "師大", "捷運古亭站(和平)", "right_down"],
+                ["left_down", "永元路", "福和橋(林森路)", "捷運公館站", "台電大樓", "捷運台電大樓站", "羅斯福浦城街口", "羅斯福金門街口", "down_left"],
+                ["down_right", "秀朗國小", "得和路", "中興新村", "中興二村", "智光商職", "南勢角(景平路)", "捷運景平站", "right_down"],
+                ["space", "space", "space", "space", "space", "tail", "中正環河路口", "捷運秀朗橋站", "景平路景德街口", "down_left"]
+            ]
+        }
+    };
+
+    let currentRoute = "254";
+    let currentDirection = "0";
+    let intervalId = null;
+
+</script>
+
+<script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+<script>
+    document.getElementById('direction-go').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("254", "0", true);
+            startAutoUpdate();
+        }
+    });
+    document.getElementById('direction-back').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("254", "1", true);
+            startAutoUpdate();
+        }
+    });
+
+    // 預設載入去程
+    fetchEta("254", "0", true);
+    startAutoUpdate();
+</script>
+{% endblock %}

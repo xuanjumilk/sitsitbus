@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}18公車路線{% endblock %}
+{% block content %}
+<main>
+    <div class="businfo-title">18</div>
+    <div class="direction-area">
+        <button id="direction-go" type="button" class="direction-btn active">往捷運麟光站</button>
+        <button id="direction-back" type="button" class="direction-btn">往萬華</button>
+    </div>
+    <div class="map_container">
+        <div class="route-map" id="route-map"></div>
+    </div>
+</main>
+
+<script>
+    const allStopNames = {
+        "18": {
+            "0": [// To MRT Linguang Station (往捷運麟光站)
+                ["head", "華江站", "人壽一村", "大理高中", "華江派出所", "龍山國小", "萬華分局", "桂林路", "昆明活動中心", "right_down"],
+                ["left_down", "臺大醫院", "臺北車站(忠孝)", "臺北郵局", "博愛路", "寶慶路", "西門市場(漢中)", "內江街", "down_left"],
+                ["down_right", "捷運中正紀念堂站(中山)", "捷運中正紀念堂站(勞保局)", "自來水西分處(寧波)", "聯合醫院婦幼院區一", "南昌家具街", "捷運古亭站(和平)", "師大", "right_down"],
+                ["left_down", "臥龍街", "國立臺北教育大學", "復興南路口", "龍門國中(和平)", "大安森林公園", "溫州街口", "師大綜合大樓", "down_left"],
+                ["down_right", "和平安和路口", "捷運六張犁站(和平)", "富陽街口", "黎忠市場", "捷運麟光站", "tail", "space", "space", "space"]
+            ],
+            "1": [// To Wanhua (往萬華)
+                ["head", "黎忠市場", "富陽街口", "捷運六張犁站(和平)", "和平安和路口", "臥龍街", "國立臺北教育大學", "復興南路口", "國北教大實小", "right_down"],
+                ["left_down", "羅斯福潮州街口", "捷運古亭站(和平)", "師大", "師大綜合大樓", "溫州街口", "大安森林公園", "龍門國中(和平)", "down_left"],
+                ["down_right", "捷運中正紀念堂站(羅斯福)", "一女中(公園)", "捷運台大醫院站", "博物館(館前)", "臺北車站(開封)", "重慶南路一段", "二二八和平公園", "right_down"],
+                ["left_down", "龍山國小", "萬華分局", "桂林路", "桂林昆明街口", "西寧南路", "西門市場(成都)", "衡陽路", "down_left"],
+                ["down_right", "華江派出所", "力霸社區", "華江站", "tail", "space", "space", "space", "space", "space"]
+            ]
+        }
+    };
+
+    let currentRoute = "18";
+    let currentDirection = "0";
+    let intervalId = null;
+
+</script>
+
+<script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+<script>
+
+    document.getElementById('direction-go').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("18", "0", true);
+            startAutoUpdate();
+        }
+    });
+    document.getElementById('direction-back').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("18", "1", true);
+            startAutoUpdate();
+        }
+    });
+
+    // 預設載入去程
+    fetchEta("18", "0", true);
+    startAutoUpdate();
+</script>
+{% endblock %}

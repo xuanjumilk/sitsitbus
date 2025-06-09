@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}坐坐巴收藏{% endblock %}
+{% block content %}
+<main>
+    <h2>我的收藏站牌</h2>
+    <form id="fav-form" class="fav-form">
+        <select id="route-select" class="fav-select" required>
+            <option value="">請選擇路線</option>
+        </select>
+        <select id="direction-select" class="fav-select" required>
+            <option value="">請選擇方向</option>
+        </select>
+        <select id="stop-select" class="fav-select" required>
+            <option value="">請選擇站牌</option>
+        </select>
+        <button type="submit" class="fav-btn">儲存</button>
+        <span id="eta-result" class="fav-eta"></span>
+    </form>
+    <hr>
+    <h2>已收藏站牌</h2>
+    <div id="fav-list" class="fav-list" style="align-items:flex-start"></div>
+</main>
+
+<script>
+    const allStopNames = JSON.parse('{{ all_stop_names|tojson | safe }}');
+    const routeSelect = document.getElementById('route-select');
+    const directionSelect = document.getElementById('direction-select');
+    const stopSelect = document.getElementById('stop-select');
+    const etaResult = document.getElementById('eta-result');
+    const favList = document.getElementById('fav-list');
+
+    // 初始化路線選單
+    for (const route in allStopNames) {
+        routeSelect.innerHTML += `<option value="${route}">${route}</option>`;
+    }
+
+    // 路線改變時，更新方向
+    routeSelect.addEventListener('change', () => {
+        directionSelect.innerHTML = '<option value="">請選擇方向</option>';
+        stopSelect.innerHTML = '<option value="">請選擇站牌</option>';
+        etaResult.textContent = '';
+        if (!routeSelect.value) return;
+        const directions = Object.keys(allStopNames[routeSelect.value]);
+        directions.forEach(dir => {
+            const stops = allStopNames[routeSelect.value][dir];
+            const lastStop = stops[stops.length - 1];
+            directionSelect.innerHTML += `<option value="${dir}">往${lastStop}</option>`;
+        });
+    });
+
+    // 方向改變時，更新站牌
+    directionSelect.addEventListener('change', () => {
+        stopSelect.innerHTML = '<option value="">請選擇站牌</option>';
+        etaResult.textContent = '';
+        if (!routeSelect.value || !directionSelect.value) return;
+        allStopNames[routeSelect.value][directionSelect.value].forEach(stop => {
+            stopSelect.innerHTML += `<option value="${stop}">${stop}</option>`;
+        });
+    });
+
+    // 站牌改變時，查詢 ETA
+    stopSelect.addEventListener('change', () => {
+        etaResult.textContent = '';
+        if (!routeSelect.value || !directionSelect.value || !stopSelect.value) return;
+        fetch(`/bus/api/eta?route=${routeSelect.value}&direction=${directionSelect.value}`)
+            .then(res => res.json())
+            .then(data => {
+                const stopData = data.find(s => s.stop_name === stopSelect.value);
+                if (stopData && stopData.minutes !== null) {
+                    etaResult.textContent = `預估到站：${stopData.minutes} 分`;
+                } else {
+                    etaResult.textContent = '暫無預估時間';
+                }
+            });
+    });
+
+    // 儲存收藏
+    document.getElementById('fav-form').addEventListener('submit', e => {
+        e.preventDefault();
+        fetch('/bus/favorites/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                route: routeSelect.value,
+                direction: directionSelect.value,
+                stop_name: stopSelect.value
+            })
+        }).then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    loadFavs();
+                } else {
+                    alert(data.error || '最多只能收藏五個站牌');
+                }
+            });
+    });
+
+    // 載入已收藏（避免閃爍：先產生 fragment，再一次性取代）
+    function loadFavs() {
+        fetch('/bus/favorites/list')
+            .then(res => res.json())
+            .then(list => {
+                if (list.length === 0) {
+                    favList.innerHTML = '<div class="fav-empty">尚未收藏任何站牌</div>';
+                    return;
+                }
+                // 取得所有 route/direction 組合
+                const etaPromises = {};
+                list.forEach(item => {
+                    const key = `${item.route}_${item.direction}`;
+                    if (!etaPromises[key]) {
+                        etaPromises[key] = fetch(`/bus/api/eta?route=${item.route}&direction=${item.direction}`)
+                            .then(res => res.json());
+                    }
+                });
+                Promise.all(Object.values(etaPromises)).then(etaResults => {
+                    // 組合所有 eta 結果
+                    const etaMap = {};
+                    Object.keys(etaPromises).forEach((key, idx) => {
+                        etaMap[key] = etaResults[idx];
+                    });
+                    // 建立畫面
+                    const frag = document.createDocumentFragment();
+                    list.forEach(item => {
+                        const key = `${item.route}_${item.direction}`;
+                        const etaArr = etaMap[key] || [];
+                        const stopEta = etaArr.find(s => s.stop_name === item.stop);
+                        const card = document.createElement('div');
+                        card.className = 'fav-card fav-row';
+                        card.innerHTML = `
+                        <div class="fav-route">${item.route}</div>
+                        <div class="fav-direction">${getDirectionText(item.route, item.direction)}</div>
+                        <div class="fav-stop">${item.stop}</div>
+                        <span class="fav-eta">${stopEta && stopEta.minutes !== null ? '預估 ' + stopEta.minutes + ' 分' : '暫無預估'}</span>
+                        <button class="del-btn" title="刪除收藏">✕</button>
+                    `;
+                        card.querySelector('.del-btn').addEventListener('click', function () {
+                            card.style.opacity = '0.5';
+                            card.querySelector('.del-btn').disabled = true;
+                            fetch('/bus/favorites/delete', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    route: item.route,
+                                    direction: item.direction,
+                                    stop_name: item.stop
+                                })
+                            }).then(res => res.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        card.style.transition = 'opacity 0.2s';
+                                        card.style.opacity = '0';
+                                        setTimeout(() => {
+                                            card.remove();
+                                            if (!favList.querySelector('.fav-card')) {
+                                                favList.innerHTML = '<div class="fav-empty">尚未收藏任何站牌</div>';
+                                            }
+                                        }, 200);
+                                    } else {
+                                        card.style.opacity = '';
+                                        card.querySelector('.del-btn').disabled = false;
+                                        alert('刪除失敗');
+                                    }
+                                });
+                        });
+                        frag.appendChild(card);
+                    });
+                    favList.innerHTML = '';
+                    favList.appendChild(frag);
+                });
+            });
+    }
+    loadFavs();
+
+    setInterval(loadFavs, 30000);
+
+    function getDirectionText(route, dir) {
+        if (allStopNames[route] && allStopNames[route][dir]) {
+            const stops = allStopNames[route][dir];
+            return '往' + stops[stops.length - 1];
+        }
+        return dir == "0" ? "去程" : "回程";
+    }
+</script>
+{% endblock %}

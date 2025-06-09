@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}237公車路線{% endblock %}
+{% block content %}
+<main>
+    <div class="businfo-title">237</div>
+    <div class="direction-area">
+        <button id="direction-go" type="button" class="direction-btn active">往捷運東門站</button>
+        <button id="direction-back" type="button" class="direction-btn">往富德</button>
+    </div>
+    <div class="map_container">
+        <div class="route-map" id="route-map"></div>
+    </div>
+</main>
+
+<script>
+    const allStopNames = {
+        "237": {
+            "0": [// To MRT Dongmen Station (往捷運東門站)
+                ["head", "富德", "象頭埔", "萬福橋", "捷運動物園站", "貓纜動物園站", "萬壽橋頭(新光)", "萬壽橋頭(秀明)", "萬興國小", "right_down"],
+                ["left_down", "好漢坡", "大草坪(自強宿舍)", "研創中心", "六期運動場", "環山網球場", "政大圖書館", "政大一", "down_left"],
+                ["down_right", "大草坪(自強宿舍)", "研創中心", "六期運動場", "環山網球場", "政大圖書館", "萬興圖書館", "大誠高中", "right_down"],
+                ["left_down", "忠順廟", "司法新村", "景文中學(臺灣戲曲學院)", "木柵市場", "文山行政中心", "萬壽橋頭(木柵)", "萬壽橋頭(秀明)", "down_left"],
+                ["down_right", "國泰新村(興隆)", "忠順街口", "木柵公園", "馬明潭(再興中學)", "興隆山莊", "海巡署一", "海巡署", "right_down"],
+                ["left_down", "辛亥國小", "捷運辛亥站", "青峰活動中心", "自來水處(辛亥)", "大安運動中心", "大安健康服務中心", "復興南路口", "down_left"],
+                ["down_right", "青峰活動中心", "自來水處(辛亥)", "大安運動中心", "大安健康服務中心", "復興南路口", "國北教大實小", "龍門國中(和平)", "right_down"],
+                ["left_down", "潮州街口", "捷運古亭站(杭州)", "捷運古亭站(和平)", "師大", "師大綜合大樓", "溫州街口", "大安森林公園", "down_left"],
+                ["down_right", "愛國東路口", "金甌女中", "捷運東門站(金山)", "tail", "space", "space", "space", "space", "space"]
+            ],
+            "1": [// To Fude (往富德)
+                ["head", "公企中心", "金山潮州街口", "師大", "師大綜合大樓", "溫州街口", "大安森林公園", "龍門國中(和平)", "復興南路口", "right_down"],
+                ["left_down", "辛亥國小", "臺北市懷愛館", "青峰活動中心", "自來水處(辛亥)", "臺大國青大樓", "大安健康服務中心", "國立臺北教育大學", "down_left"],
+                ["down_right", "捷運辛亥站", "捷運辛亥站一", "興隆路口(辛亥)", "捷運萬芳醫院站", "臺灣警察專科學校", "文山運動中心(興隆)", "海巡署", "right_down"],
+                ["left_down", "忠順廟", "國泰新村(興隆)", "忠順街口", "木柵公園", "馬明潭(再興中學)", "興隆山莊", "海巡署一", "down_left"],
+                ["down_right", "司法新村", "景文中學(臺灣戲曲學院)", "木柵市場", "文山行政中心", "萬壽橋頭(木柵)", "萬壽橋頭(秀明)", "萬興國小", "right_down"],
+                ["left_down", "捷運動物園站", "貓纜動物園站", "萬壽橋頭(新光)", "萬壽橋頭(秀明)", "大誠高中", "萬興圖書館", "政大一", "down_left"],
+                ["down_right", "萬福橋", "象頭埔", "富德", "tail", "space", "space", "space", "space", "space"],
+            ]
+        }
+    };
+
+    let currentRoute = "237";
+    let currentDirection = "0";
+    let intervalId = null;
+
+</script>
+
+<script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+<script>
+    document.getElementById('direction-go').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("237", "0", true);
+            startAutoUpdate();
+        }
+    });
+    document.getElementById('direction-back').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("237", "1", true);
+            startAutoUpdate();
+        }
+    });
+
+    // 預設載入去程
+    fetchEta("237", "0", true);
+    startAutoUpdate();
+</script>
+{% endblock %}

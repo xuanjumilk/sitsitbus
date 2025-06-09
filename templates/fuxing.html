@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}復興幹線公車路線{% endblock %}
+{% block content %}
+        <main>
+            <div class="businfo-title">復興幹線</div>
+            <div class="direction-area">
+                <button id="direction-go" type="button" class="direction-btn active">往景美</button>
+                <button id="direction-back" type="button" class="direction-btn">往建國北路</button>
+            </div>
+            <div class="map_container">
+                <div class="route-map" id="route-map"></div>
+            </div>
+        </main>
+    
+        <script>
+        const allStopNames = {
+            "復興幹線": {
+                "0": [// To Jingmei (往景美)
+                    
+                    ["head", "建北站", "臺北漁市", "第二果菜市場", "下埤里", "復興北村", "五常街口", "捷運中山國中站", "興安華城", "right_down"],
+                    ["left_down", "東豐復興路口", "聯合醫院仁愛院區", "懷生國中", "捷運忠孝復興站", "復興南路(埤頭里)", "芝麻大廈", "捷運南京復興站", "down_left"],
+                    ["down_right", "大安高工(捷運大安站)", "開平餐飲學校", "捷運科技大樓站", "復興南路口", "國北教大實小", "龍門國中(和平)", "大安森林公園", "right_down"],
+                    ["left_down", "捷運台電大樓站", "羅斯福浦城街口", "羅斯福金門街口", "捷運古亭站(和平)", "師大", "師大綜合大樓", "溫州街口", "down_left"],
+                    ["down_right", "台電大樓", "捷運公館站",  "師大分部","武功國小(興隆)", "景明街口", "憲光公寓", "景興國中", "right_down"],
+                    ["space", "space", "space", "space","space", "space", "space","tail","景華公園","down_left"]
+                ],
+                "1": [// To Jianguo N. Rd (往建國北路)
+                    ["head","景美國中", "財政園區", "萬隆", "捷運萬隆站", "武功國小(羅斯福)", "師大分部", "捷運公館站", "台電大樓", "right_down"],
+                    ["left_down", "龍門國中(和平)", "大安森林公園", "溫州街口", "師大綜合大樓", "師大", "師大路", "捷運台電大樓站", "down_left"],
+                    ["down_right", "復興南路口", "捷運科技大樓站", "開平餐飲學校", "大安高工(捷運大安站)", "捷運大安站(復興)","東豐復興路口", "聯合醫院仁愛院區", "right_down"],
+                    ["left_down", "捷運中山國中站", "民生東路口", "興安華城", "捷運南京復興站", "芝麻大廈", "復興南路(中崙里)", "捷運忠孝復興站", "down_left"],
+                    ["down_right", "民權龍江路口", "民權建國路口", "行天宮", "新生公園(林安泰)", "建北站", "tail", "space", "space", "space"]
+                
+                ]
+            }
+        };
+
+        let currentRoute = "復興幹線";
+        let currentDirection = "0";
+        let intervalId = null;
+        </script>
+        
+        <script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+        <script>
+        document.getElementById('direction-go').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("復興幹線", "0", true);
+                startAutoUpdate();
+            }
+        });
+        document.getElementById('direction-back').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("復興幹線", "1", true);
+                startAutoUpdate();
+            }
+        });
+ 
+        // 預設載入去程
+        fetchEta("復興幹線", "0", true);
+        startAutoUpdate();
+        </script>
+{% endblock %}

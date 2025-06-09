@@ -1,0 +1,8 @@
+<div class="header-bar">
+    <a href="{{ url_for('home') }}">首頁</a>
+    <a href="{{ url_for('bus.favorites') }}">收藏站牌</a>
+    <a href="#skin" onclick="openSkinModal();return false;">公車裝扮</a>
+    <a href="{{ url_for('about') }}">關於我們</a>
+    <a href="{{ url_for('login.logout') }}">登出</a>
+</div>
+{% include 'skin.html' %}

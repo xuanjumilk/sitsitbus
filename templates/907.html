@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}907公車路線{% endblock %}
+{% block content %}
+        <main>
+            <div class="businfo-title">907</div>
+            <div class="direction-area">
+                <button id="direction-go" type="button" class="direction-btn active">往崇義高中</button>
+                <button id="direction-back" type="button" class="direction-btn">往萬華</button>
+            </div>
+            <div class="map_container">
+                <div class="route-map" id="route-map"></div>
+            </div>
+        </main>
+    
+        <script>
+        const allStopNames = {
+            "907": {
+                "0": [// To Trung Yi High School (往崇義高中)
+                    ["head","華江站", "人壽一村", "大理高中", "華江派出所", "中國時報", "捷運龍山寺站", "昆明街口", "和平中華路口", "right_down"], 
+                    ["left_down","師大", "捷運古亭站(和平)", "南福板溪(南昌公園)", "和平西路一段", "泉州街", "龍口市場", "植物園","down_left"], 
+                    ["down_right","師大綜合大樓", "溫州街口", "龍安國小(公務人力發展學院)", "臺大綜合體育館", "臺大", "捷運公館站", "公館","right_down"],
+                    ["left_down","連興街口", "東方科學園區", "遠東世界中心", "自來水處(辛亥)", "基隆長興街口", "臺大癌醫(基隆路)","臺灣科技大學","down_left"],
+                    ["down_right","汐止農會", "汐止行政中心", "秀峰高中(忠孝東路)", "汐止後車站", "摩登家庭社區", "橋東", "崇義高中(忠孝東路)","tail","space"],
+                ],
+                "1": [// To Wanhua (往萬華)
+                    ["head","崇義高中(忠孝東路)", "橋東", "摩登家庭社區", "汐止後車站", "秀峰高中(忠孝東路)", "汐止行政中心", "汐止農會", "連興街口", "right_down"], 
+                    ["left_down", "公館", "臺灣科技大學", "臺大癌醫(基隆路)", "基隆長興街口", "自來水處(辛亥)", "遠東世界中心", "東方科學園區", "down_left"], 
+                    ["down_right", "捷運公館站", "臺大", "臺大綜合體育館", "溫州街口", "師大綜合大樓","師大", "捷運古亭站(和平)", "right_down"],
+                    ["left_down", "昆明街口", "和平中華路口", "植物園", "龍口市場", "泉州街", "和平西路一段", "南福板溪(南昌公園)", "down_left"],
+                    ["down_right",  "捷運龍山寺站", "中國時報", "華江派出所", "大理高中", "人壽一村", "華江站","tail","space","space"],
+                ]
+            }
+        };
+
+        let currentRoute = "907";
+        let currentDirection = "0";
+        let intervalId = null;
+
+        </script>
+        
+        <script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+        <script>
+        document.getElementById('direction-go').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("907", "0", true);
+                startAutoUpdate();
+            }
+        });
+        document.getElementById('direction-back').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("907", "1", true);
+                startAutoUpdate();
+            }
+        });
+
+        // 預設載入去程
+        fetchEta("907", "0", true);
+        startAutoUpdate();
+        </script>
+{% endblock %}

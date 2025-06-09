@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}0南公車路線{% endblock %}
+{% block content %}
+<main>
+    <div class="businfo-title">0南</div>
+    <div class="direction-area">
+        <button id="direction-go" type="button" class="direction-btn active">往捷運東門站</button>
+        <button id="direction-back" type="button" class="direction-btn">往萬芳社區</button>
+    </div>
+    <div class="source-switch-area">
+        <button id="source-bus" class="source-btn active">官方資料</button>
+        <button id="source-model" class="source-btn">坐坐巴資料</button>
+    </div>
+    <div class="map_container">
+        <div class="route-map" id="route-map"></div>
+    </div>
+</main>
+
+<script>
+    const allStopNames = {
+        "0南": {
+            "0": [// To MRT Dongmen Station (往捷運東門站)
+                ["head", "萬芳社區", "萬芳活動中心", "萬芳國小", "萬芳6號公園", "萬利街口", "棕櫚泉社區", "文山運動中心(萬芳)", "臺灣警察專科學校", "right_down"],
+                ["left_down", "憲光公寓", "靜心高中", "興隆市場", "興德國小", "興隆國小", "中國科技大學(興隆)", "捷運萬芳醫院站", "down_left"],
+                ["down_right", "景明街口", "武功國小(興隆)", "師大分部", "捷運公館站", "臺大", "臺大綜合體育館", "溫州街口", "right_down"],
+                ["space", "space", "space", "tail", "捷運東門站(金山)", "公企中心", "金山潮州街口", "師大", "師大綜合大樓", "down_left"]
+            ],
+            "1": [// To Wanshang Community (往萬芳社區)
+                ["head", "信義永康街口(捷運東門站)", "金華新生路口", "和平新生路口", "龍安國小(公務人力發展學院)", "臺大綜合體育館", "臺大", "捷運公館站", "師大分部", "right_down"],
+                ["left_down", "興隆國小", "興德國小", "興隆市場", "靜心高中", "憲光公寓", "景明街口", "武功國小(興隆)", "down_left"],
+                ["down_right", "捷運萬芳醫院站", "臺灣警察專科學校", "文山運動中心(萬芳)", "棕櫚泉社區", "萬利街口", "捷運萬芳社區站", "萬芳6號公園", "right_down"],
+                ["space", "space", "space", "space", "space", "tail", "萬芳社區", "萬芳活動中心", "萬芳國小", "down_left"]
+            ]
+        }
+    };
+
+    let currentRoute = "0南";
+    let currentDirection = "0";
+    let intervalId = null;
+</script>
+
+<script src="{{ url_for('static', filename='api_switch.js') }}"></script>
+<script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+<script>
+    document.getElementById('direction-go').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("0南", "0", true);
+            startAutoUpdate();
+        }
+    });
+    document.getElementById('direction-back').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("0南", "1", true);
+            startAutoUpdate();
+        }
+    });
+
+    // 預設載入去程
+    fetchEta("0南", "0", true);
+    startAutoUpdate();
+</script>
+{% endblock %}

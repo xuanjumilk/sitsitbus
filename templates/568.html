@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}568公車路線{% endblock %}
+{% block content %}
+        <main>
+            <div class="businfo-title">568</div>
+            <div class="direction-area">
+                <button id="direction-go" type="button" class="direction-btn active">往捷運麟光站</button>
+                <button id="direction-back" type="button" class="direction-btn">往萬華</button>
+            </div>
+            <div class="map_container">
+                <div class="route-map" id="route-map"></div>
+            </div>
+        </main>
+    
+        <script>
+        const allStopNames = {
+            "568": {
+                "0": [// To MRT Linguang Station (往捷運麟光站)
+                    ["head","華江站", "人壽一村", "大理高中", "華江派出所", "中國時報", "捷運龍山寺站", "昆明街口", "和平中華路口","right_down"], 
+                    ["left_down", "師大", "捷運古亭站(和平)", "南福板溪(南昌公園)", "和平西路一段", "泉州街", "龍口市場", "植物園","down_left"], 
+                    ["down_right","師大綜合大樓", "溫州街口", "大安森林公園", "龍門國中(和平)", "復興南路口", "國立臺北教育大學", "臥龍街", "right_down"],
+                    ["space","space","space","tail","捷運麟光站", "黎忠市場", "富陽街口", "捷運六張犁站(和平)", "和平安和路口","down_left"],
+                ],
+                "1": [// To Wanhua (往萬華)
+                    ["head","捷運麟光站", "黎忠市場", "富陽街口", "捷運六張犁站(和平)", "和平安和路口", "臥龍街", "國立臺北教育大學", "復興南路口", "right_down"], 
+                    ["left_down", "捷運古亭站(和平)", "師大", "師大綜合大樓", "溫州街口", "大安森林公園", "龍門國中(和平)", "國北教大實小","down_left"], 
+                    ["down_right","南福板溪(南昌公園)", "和平西路一段", "泉州街", "龍口市場", "植物園", "和平中華路口", "昆明街口","right_down"],
+                    ["space","space","tail","華江站", "人壽一村", "大理高中", "華江派出所", "中國時報", "捷運龍山寺站","down_left"],
+                ]
+            }
+        };
+
+        let currentRoute = "568";
+        let currentDirection = "0";
+        let intervalId = null;
+
+        </script>
+        
+        <script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+        <script>
+        document.getElementById('direction-go').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("568", "0", true);
+                startAutoUpdate();
+            }
+        });
+        document.getElementById('direction-back').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("568", "1", true);
+                startAutoUpdate();
+            }
+        });
+
+        // 預設載入去程
+        fetchEta("568", "0", true);
+        startAutoUpdate();
+        </script>
+{% endblock %}

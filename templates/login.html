@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}登入坐坐巴{% endblock %}
+{% block content %}
+<div class="login-box">
+    <form id="loginForm">
+        <div class="login-title">登入</div>
+        <div class="login-input-group">
+            <input type="text" class="login-input" name="username" placeholder="帳號" required pattern="[A-Za-z0-9]{6,}" title="至少6個英文或數字">
+            <input type="password" class="login-input" name="password" placeholder="密碼" required pattern="[A-Za-z0-9]{6,}" title="至少6個英文或數字">
+        </div>
+        <button type="submit" class="login-btn">登入/註冊</button>
+    </form>
+</div>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); // 阻止表單預設提交行為
+
+    const username = document.querySelector('input[name="username"]').value.trim();
+    const password = document.querySelector('input[name="password"]').value.trim();
+
+    // 判斷格式（你可以額外驗證）
+    if (username.length < 6 || password.length < 6) {
+        alert("帳號和密碼需為 6 個以上英數字");
+        return;
+    }
+
+    try {
+        const response = await fetch("/login/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message);  // 登入成功
+            // ✅ 這裡可以導向主頁
+            window.location.href = "/";
+        } else {
+            alert(result.error);  // 顯示錯誤
+        }
+    } catch (err) {
+        alert("伺服器錯誤，請稍後再試");
+        console.error(err);
+    }
+});
+</script>
+
+{% endblock %}

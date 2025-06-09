@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <title>歡迎使用坐坐巴</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body,
+        html {
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            overflow: hidden;
+            background: #0f1212;
+        }
+
+        .cinema-frame {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            aspect-ratio: 21/9;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: stretch;
+        }
+
+        .cinema-header,
+        .cinema-footer {
+            background: #0f1212;
+            height: 100px;
+            min-height: 100px;
+            width: 100%;
+            z-index: 2;
+        }
+
+        .cinema-main {
+            flex: 1 1 auto;
+            background: url("{{ url_for('static', filename='background.png') }}") center center/cover no-repeat;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .bg-overlay {
+            position: absolute;
+            inset: 0;
+            background: #504848;
+            opacity: 0.8;
+            /* 0~1，數值越大越黑，可自行調整 */
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .start-btn {
+            position: absolute;
+            border: none;
+            left: 50%;
+            bottom: 15%;
+            transform: translateX(-50%);
+            z-index: 2;
+            font-family: 'MyCustomFont', monospace;
+            font-size: 2rem;
+            color: #fff;
+            background: #0f1212;
+            border-radius: 12px;
+            padding: 10px 10px;
+            box-shadow: 0 0 0 6px #F27979, 0 8px 0 0 #1c1f1f;
+            cursor: pointer;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0 #f08ca5, 0 0 8px #fff;
+            transition: filter 0.1s, box-shadow 0.1s;
+            outline: none;
+            user-select: none;
+            /* 像素風格 */
+            image-rendering: pixelated;
+        }
+
+        .start-btn.flicker {
+            animation: flicker 0.15s steps(2) 4;
+        }
+
+        @keyframes flicker {
+
+            0%,
+            100% {
+                filter: brightness(1);
+                box-shadow: 0 0 0 6px #f08ca5, 0 8px 0 0 #a05a6c;
+            }
+
+            25% {
+                filter: brightness(2);
+                box-shadow: 0 0 16px 6px #fff, 0 8px 0 0 #a05a6c;
+            }
+
+            50% {
+                filter: brightness(0.5);
+                box-shadow: 0 0 0 6px #f08ca5, 0 8px 0 0 #a05a6c;
+            }
+
+            75% {
+                filter: brightness(2);
+                box-shadow: 0 0 16px 6px #fff, 0 8px 0 0 #a05a6c;
+            }
+        }
+
+        .transition-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            opacity: 0;
+            z-index: 9999;
+            pointer-events: none;
+            transition: opacity 0.6s;
+        }
+
+        .transition-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .Logo {
+            position: absolute;
+            left: 0;
+            top: 60%;
+            width: 100vw;
+            transform: translateY(-100%);
+            z-index: 2;
+            pointer-events: none;
+            background: #00000047;
+            display: flex;
+            justify-content: center;
+        }
+
+        .start-btn {
+            font-family: 'MyCustomFont', monospace;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0 #cd93a1, 0 0 8px #fff;
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cinema-frame">
+        <div class="cinema-header"></div>
+        <div class="cinema-main">
+            <div class="bg-overlay"></div>
+            <div class="Logo">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo"
+                    style="width:450px;max-width:90vw;display:block;">
+            </div>
+            <button class="start-btn" id="startBtn">開始坐坐巴</button>
+        </div>
+        <div class="cinema-footer"></div>
+        <div class="transition-overlay" id="transitionOverlay"></div>
+    </div>
+    <script>
+        const btn = document.getElementById('startBtn');
+        const overlay = document.getElementById('transitionOverlay');
+        btn.addEventListener('click', function () {
+            btn.classList.remove('flicker');
+            void btn.offsetWidth;
+            btn.classList.add('flicker');
+            // 動畫結束後啟動轉場
+            btn.addEventListener('animationend', function handler() {
+                overlay.classList.add('active');
+                btn.removeEventListener('animationend', handler);
+                // 等待轉場動畫結束再導向
+                overlay.addEventListener('transitionend', function overlayHandler() {
+                    window.location.href = "{{ url_for('home') }}";
+                    overlay.removeEventListener('transitionend', overlayHandler);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

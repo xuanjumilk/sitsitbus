@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}和平幹線公車路線{% endblock %}
+{% block content %}
+        <main>
+            <div class="businfo-title">和平幹線</div>
+            <div class="direction-area">
+                <button id="direction-go" type="button" class="direction-btn active">往衡陽路</button>
+                <button id="direction-back" type="button" class="direction-btn">往萬芳社區</button>
+            </div>
+            <div class="map_container">
+                <div class="route-map" id="route-map"></div>
+            </div>
+        </main>
+    
+        <script>
+        const allStopNames = {
+            "和平幹線": {
+                "0": [// To Hengyang Rd (往衡陽路)
+                    
+                    ["head", "萬芳社區", "萬芳活動中心", "萬芳派出所", "公務人員訓練處", "萬美社區", "萬芳國宅", "萬寧街", "萬寧山莊", "right_down"],
+                    ["left_down", "捷運六張犁站(和平)", "富陽街口", "黎忠市場", "麟光站", "大我新舍", "臥龍新村", "名門社區", "down_left"],
+                    ["down_right", "和平安和路口", "臥龍街", "國立臺北教育大學", "復興南路口", "國北教大實小", "龍門國中(和平)", "大安森林公園", "right_down"],
+                    ["left_down", "捷運中正紀念堂站", "捷運中正紀念堂站(羅斯福)", "羅斯福潮州街口", "捷運古亭站(和平)", "師大", "師大綜合大樓", "溫州街口", "down_left"],
+                    ["down_right", "景福門", "臺大醫院", "臺北車站(忠孝)", "重慶南路一段", "二二八和平公園", "tail", "space", "space", "space"]
+                ],
+                "1": [// To Wanshang Community (往萬芳社區)
+                    ["head", "博愛路", "臺北郵局", "臺北車站(忠孝)", "捷運善導寺站", "開南中學", "仁愛林森路口", "捷運中正紀念堂站(羅斯福)", "南昌家具街", "right_down"],
+                    ["left_down", "復興南路口", "龍門國中(和平)", "大安森林公園", "溫州街口", "師大綜合大樓", "師大", "捷運古亭站(和平)", "down_left"],
+                    ["down_right", "國立臺北教育大學", "臥龍街", "和平安和路口", "捷運六張犁站(和平)", "富陽街口", "黎忠市場", "捷運麟光站", "right_down"],
+                    ["left_down", "萬芳國宅", "萬寧街", "萬寧山莊", "名門社區", "臥龍新村", "大我新舍", "麟光站", "down_left"],
+                    ["down_right", "萬美社區", "公務人員訓練處", "萬芳派出所", "萬芳活動中心", "萬芳社區", "tail", "space", "space", "space"]
+                
+                ]
+            }
+        };
+
+        let currentRoute = "和平幹線";
+        let currentDirection = "0";
+        let intervalId = null;
+        </script>
+        
+        <script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+        <script>
+        document.getElementById('direction-go').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("和平幹線", "0", true);
+                startAutoUpdate();
+            }
+        });
+        document.getElementById('direction-back').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("和平幹線", "1", true);
+                startAutoUpdate();
+            }
+        });
+ 
+        // 預設載入去程
+        fetchEta("和平幹線", "0", true);
+        startAutoUpdate();
+        </script>
+{% endblock %}

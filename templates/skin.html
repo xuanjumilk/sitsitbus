@@ -1,0 +1,81 @@
+<div id="skin-modal" class="skin-modal">
+  <div class="skin-modal-content skin-pixel-style">
+    <!-- 上半部分：大預覽 -->
+    <div class="skin-preview-big-container">
+      <img id="skin-preview" src="{{ url_for('static', filename='skins/skin1_left.gif') }}" class="skin-preview-big"
+        alt="skin preview">
+    </div>
+    <!-- 下半部分：選擇SKIN -->
+    <div class="skin-select-list">
+      <label class="skin-select-item">
+        <input type="radio" name="skin_id" value="1" checked>
+        <img src="{{ url_for('static', filename='skins/skin1_left.gif') }}" alt="skin1">
+        <span class="skin-name">坐坐巴經典造型</span>
+      </label>
+      <label class="skin-select-item">
+        <input type="radio" name="skin_id" value="2">
+        <img src="{{ url_for('static', filename='skins/skin2_left.gif') }}" alt="skin2">
+        <span class="skin-name">世壯運壯寶造型</span>
+      </label>
+      <label class="skin-select-item">
+        <input type="radio" name="skin_id" value="3">
+        <img src="{{ url_for('static', filename='skins/skin3_left.gif') }}" alt="skin3">
+        <span class="skin-name">瑞芳觀光卡皮巴拉造型</span>
+      </label>
+    </div>
+    <div class="skin-save-btn-container">
+      <button id="save-skin-btn" class="fav-btn">保存造型</button>
+    </div>
+    <span class="skin-modal-close" id="skin-modal-close">&times;</span>
+  </div>
+</div>
+
+<script>
+  function openSkinModal() {
+    document.getElementById('skin-modal').style.display = 'block';
+  }
+  function closeSkinModal() {
+    document.getElementById('skin-modal').style.display = 'none';
+  }
+  document.getElementById('skin-modal-close').onclick = closeSkinModal;
+
+  // 預覽圖切換
+  const radios = document.querySelectorAll('input[name="skin_id"]');
+  const preview = document.getElementById('skin-preview');
+  radios.forEach(radio => {
+    radio.addEventListener('change', function () {
+      preview.src = `/static/skins/skin${this.value}_left.gif`;
+    });
+  });
+
+  // 載入目前skin
+  fetch('/skin/get_skin').then(res => res.json()).then(data => {
+    const skinId = data.skin_id || 1;
+    document.querySelector(`input[name="skin_id"][value="${skinId}"]`).checked = true;
+    preview.src = `/static/skins/skin${skinId}_left.gif`;
+  });
+
+  // 保存skin
+  document.getElementById('save-skin-btn').onclick = function () {
+    const skinId = document.querySelector('input[name="skin_id"]:checked').value;
+    fetch('/skin/save_skin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ skin_id: skinId })
+    }).then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert('造型已儲存！');
+          closeSkinModal();
+          // 立即同步更新主畫面skin
+          window.currentSkinId = parseInt(skinId, 10);
+          // 若有 fetchEta 等函式，這裡可自動刷新地圖
+          if (typeof fetchEta === 'function' && typeof currentRoute !== 'undefined' && typeof currentDirection !== 'undefined') {
+            fetchEta(currentRoute, currentDirection, false);
+          }
+        } else {
+          alert('儲存失敗');
+        }
+      });
+  };
+</script>

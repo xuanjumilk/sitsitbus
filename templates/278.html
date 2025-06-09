@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}278公車路線{% endblock %}
+{% block content %}
+<main>
+    <div class="businfo-title">278</div>
+    <div class="direction-area">
+        <button id="direction-go" type="button" class="direction-btn active">往捷運內湖站</button>
+        <button id="direction-back" type="button" class="direction-btn">往捷運景美站</button>
+    </div>
+    <div class="source-switch-area">
+        <button id="source-bus" class="source-btn active">官方資料</button>
+        <button id="source-model" class="source-btn">坐坐巴資料</button>
+    </div>
+    <div class="map_container">
+        <div class="route-map" id="route-map"></div>
+    </div>
+</main>
+
+<script>
+    const allStopNames = {
+        "278": {
+            "0": [// To MRT Neihu Station (往捷運內湖站)
+                ["head", "景福街", "溪口國小", "捷運景美站", "財政園區", "萬隆", "捷運萬隆站", "武功國小(羅斯福)", "師大分部", "right_down"],
+                ["left_down", "師大", "捷運古亭站(和平)", "羅斯福金門街口", "羅斯福浦城街口", "捷運台電大樓站", "台電大樓", "捷運公館站", "down_left"],
+                ["down_right", "師大綜合大樓", "溫州街口", "大安森林公園", "龍門國中(和平)", "復興南路口", "國立臺北教育大學", "臥龍街", "right_down"],
+                ["left_down", "市民大道口", "捷運忠孝敦化站", "安和敦化路口", "仁愛國中", "信義敦化路口", "大安國中", "成功國宅", "down_left"],
+                ["down_right", "臺視", "美仁里", "榮民服務處", "南京新村", "三軍總醫院松山分院", "長壽公園", "健康新城", "right_down"],
+                ["left_down", "時報廣場", "民權大橋", "新益里", "民生國中", "新東街口", "三民路", "三民健康路口(西松高中)", "down_left"],
+                ["down_right", "三民國中", "內湖行政大樓", "國防醫學中心", "三總內湖站", "將軍嶺", "方濟中學", "成功路三段", "right_down"],
+                ["space", "space", "space", "space", "space", "space", "tail", "捷運內湖站", "湖光市場", "down_left"]
+            ],
+            "1": [// To MRT Jingmei Station (往捷運景美站)
+                ["head", "金龍路口", "碧湖國小", "內湖派出所", "達人高中(臺灣戲曲學院)", "內湖國小", "西湖圖書館(湖光教會)", "西湖圖書館(湖光教會)", "湖光國宅", "right_down"],
+                ["left_down", "內湖行政大樓", "國防醫學中心", "三總內湖站", "將軍嶺", "方濟中學", "內湖高中", "捷運文德站(碧湖公園)", "down_left"],
+                ["down_right", "三民國中", "時報廣場", "民權大橋", "新益里", "民生國中", "新東街口", "三民路", "right_down"],
+                ["left_down", "臺北市區監理所(光復)", "博仁醫院", "南京新村", "三軍總醫院松山分院", "長壽公園", "健康新城", "三民健康路口(西松高中)", "down_left"],
+                ["down_right", "捷運國父紀念館站(光復)", "交通部觀光署", "阿波羅大廈", "捷運忠孝敦化站", "頂好市場", "懷生國中", "聯合醫院仁愛院區", "right_down"],
+                ["left_down", "龍門國中(和平)", "國北教大實小", "復興南路口", "捷運科技大樓站", "開平餐飲學校", "大安高工(捷運大安站)", "東豐復興路口", "down_left"],
+                ["down_right", "大安森林公園", "溫州街口", "師大綜合大樓", "師大", "捷運古亭站(和平)", "羅斯福金門街口", "羅斯福浦城街口", "right_down"],
+                ["left_down", "萬隆", "捷運萬隆站", "武功國小(羅斯福)", "師大分部", "捷運公館站", "台電大樓", "捷運台電大樓站", "down_left"],
+                ["down_right", "財政園區", "捷運景美站", "溪口國小", "景福街", "tail", "space", "space", "space", "space"]
+            ]
+        }
+    };
+
+    let currentRoute = "278";
+    let currentDirection = "0";
+    let intervalId = null;
+
+</script>
+<script src="{{ url_for('static', filename='api_switch.js') }}"></script>
+<script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+<script>
+
+    document.getElementById('direction-go').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("278", "0", true);
+            startAutoUpdate();
+        }
+    });
+    document.getElementById('direction-back').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("278", "1", true);
+            startAutoUpdate();
+        }
+    });
+
+    // 預設載入去程
+    fetchEta("278", "0", true);
+    startAutoUpdate();
+</script>
+{% endblock %}

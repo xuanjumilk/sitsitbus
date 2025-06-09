@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}295公車路線{% endblock %}
+{% block content %}
+<main>
+    <div class="businfo-title">295</div>
+    <div class="direction-area">
+        <button id="direction-go" type="button" class="direction-btn active">往臺北車站</button>
+        <button id="direction-back" type="button" class="direction-btn">往富德</button>
+    </div>
+    <div class="source-switch-area">
+        <button id="source-bus" class="source-btn active">官方資料</button>
+        <button id="source-model" class="source-btn">坐坐巴資料</button>
+    </div>
+    <div class="map_container">
+        <div class="route-map" id="route-map"></div>
+    </div>
+</main>
+
+<script>
+    const allStopNames = {
+        "295": {
+            "0": [// To Taipei Main Station (往臺北車站)
+                ["head", "富德", "象頭埔", "萬福橋", "捷運動物園站", "貓纜動物園站", "萬壽橋頭(新光)", "萬壽橋頭(秀明)", "萬興國小", "right_down"],
+                ["left_down", "國泰新村(木新)", "忠順廟", "司法新村", "景文中學", "木南公園", "指南路口", "新光路口", "down_left"],
+                ["down_right", "力行國小", "木新市場", "景美女中", "木新路口", "實踐國中", "中港抽水站", "溝子口(幸福華興)", "right_down"],
+                ["left_down", "青峰活動中心", "辛亥國小", "捷運辛亥站", "興隆路口(辛亥)", "中國科技大學(辛亥)", "懷恩隧道", "辛亥路6段21巷口", "down_left"],
+                ["down_right", "自來水處(辛亥)", "大安運動中心", "大安健康服務中心", "復興南路口", "國北教大實小", "龍門國中(和平)", "大安森林公園", "right_down"],
+                ["left_down", "南昌路", "聯合醫院婦幼院區一", "南昌家具街", "捷運古亭站(和平)", "師大", "師大綜合大樓", "溫州街口", "down_left"],
+                ["down_right", "南門", "一女中(公園)", "捷運台大醫院站", "臺北車站(青島)", "tail", "space", "space", "space", "space"]
+            ],
+            "1": [// To Fude (往富德)
+                ["head", "青島林森路口", "成功中學(林森)", "開南中學", "仁愛林森路口", "捷運中正紀念堂站(羅斯福)", "南昌家具街", "捷運古亭站(和平)", "師大", "right_down"],
+                ["left_down", "大安健康服務中心", "國立臺北教育大學", "復興南路口", "龍門國中(和平)", "大安森林公園", "溫州街口", "師大綜合大樓", "down_left"],
+                ["down_right", "臺大國青大樓", "自來水處(辛亥)", "青峰活動中心", "辛亥國小", "捷運辛亥站", "捷運辛亥站一", "興隆路口(辛亥)", "right_down"],
+                ["left_down", "木新市場", "木新區民活動中心", "實踐國中", "中港抽水站", "溝子口(幸福華興)", "懷恩隧道", "中國科技大學(辛亥)", "down_left"],
+                ["down_right", "力行國小", "國泰新村(木新)", "忠順廟", "司法新村", "景文中學", "木南公園", "指南路口", "right_down"],
+                ["left_down", "捷運動物園站", "貓纜動物園站", "萬壽橋頭(新光)", "萬壽橋頭(秀明)", "大誠高中", "萬興圖書館", "政大", "down_left"],
+                ["down_right", "萬福橋", "象頭埔", "富德", "tail", "space", "space", "space", "space", "space"]
+            ]
+        }
+    };
+
+    let currentRoute = "295";
+    let currentDirection = "0";
+    let intervalId = null;
+
+
+</script>
+
+<script src="{{ url_for('static', filename='api_switch.js') }}"></script>
+<script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+<script>
+    document.getElementById('direction-go').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("295", "0", true);
+            startAutoUpdate();
+        }
+    });
+    document.getElementById('direction-back').addEventListener('click', function () {
+        if (!this.classList.contains('active')) {
+            fetchEta("295", "1", true);
+            startAutoUpdate();
+        }
+    });
+
+    // 預設載入去程
+    fetchEta("295", "0", true);
+    startAutoUpdate();
+</script>
+
+{% endblock %}

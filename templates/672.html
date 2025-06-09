@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}672公車路線{% endblock %}
+{% block content %}
+        <main>
+            <div class="businfo-title">672</div>
+            <div class="direction-area">
+                <button id="direction-go" type="button" class="direction-btn active">往民生社區</button>
+                <button id="direction-back" type="button" class="direction-btn">往大鵬新村</button>
+            </div>
+            <div class="map_container">
+                <div class="route-map" id="route-map"></div>
+            </div>
+        </main>
+    
+        <script>
+        const allStopNames = {
+            "672": {
+                "0": [// To Minsheng Community (往民生社區)
+                    ["head","中正環河路口", "捷運秀朗橋站", "尖山腳", "景平路景德街口", "捷運景平站", "東森廣場", "智光商職", "中興二村", "right_down"], 
+                    ["left_down","台電大樓", "捷運公館站", "福和橋(永元路)", "永元路", "秀朗國小", "得和路", "中興新村","down_left"], 
+                    ["down_right","捷運台電大樓站", "羅斯福浦城街口", "羅斯福金門街口", "捷運古亭站(和平)", "師大", "師大綜合大樓", "溫州街口","right_down"],
+                    ["left_down", "長安東路二段", "長安松江路口", "光華商場", "捷運忠孝新生站", "仁愛新生路口", "信義新生路口", "金華新生路口","down_left"],
+                    ["down_right","南京建國路口", "南京龍江路口", "捷運南京復興站", "南京敦化路口(小巨蛋)", "臺北小巨蛋", "長庚醫院", "公教住宅","right_down"],
+                    ["space","space","space","space","space","tail","民生社區活動中心", "聯合二村", "介壽國中","down_left"],
+                ],
+                "1": [// To Da Peng New Village (往大鵬新村)
+                    ["head","三民路", "三民健康路口(西松高中)", "健康新城", "長壽公園", "三軍總醫院松山分院", "南京新村", "博仁醫院", "臺北市區監理所(光復)", "right_down"], 
+                    ["left_down",  "喬治商職", "三興國小(臨江街觀光夜市)", "光復南路口", "三張犁", "市民住宅", "國父紀念館","捷運國父紀念館站(光復)","down_left"], 
+                    ["down_right","捷運六張犁站(基隆路)","和平高中", "基隆長興路口", "臺大癌醫(基隆路)", "臺灣科技大學", "公館", "福和橋(林森路)", "right_down"],
+                    ["left_down", "南勢角(景平路)", "智光商職", "中興二村", "中興新村", "得和路", "秀朗國小","永元路","down_left"],
+                    ["down_right", "捷運景平站","景平路景德街口", "捷運秀朗橋站", "中正環河路口","tail","space","space","space","space","space"],
+                ]
+            }
+        };
+
+        let currentRoute = "672";
+        let currentDirection = "0";
+        let intervalId = null;
+
+        </script>
+        
+        <script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+        <script>
+        document.getElementById('direction-go').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("672", "0", true);
+                startAutoUpdate();
+            }
+        });
+        document.getElementById('direction-back').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("672", "1", true);
+                startAutoUpdate();
+            }
+        });
+
+        // 預設載入去程
+        fetchEta("672", "0", true);
+        startAutoUpdate();
+        </script>
+{% endblock %}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header>
+        <div class="header-layout">
+            <div class="logo-area">
+                <a href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" width="300" height="100">
+                </a>
+            </div>
+            <div class="header-right">
+                {% if session.get('user') %}
+                {% include 'headerbarlogin.html' %}
+                {% else %}
+                {% include 'headerbar.html' %}
+                {% endif %}
+                <div class="title-area">
+                    <img src="{{ url_for('static', filename='title.png') }}" alt="Logo" width="1200" height="60">
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <div class="main-banner">
+        <img src="{{ url_for('static', filename='banner.gif') }}" alt="Banner" />
+    </div>
+    <footer>
+        <p>
+            © 2025 坐坐巴 BusInfo<br>
+            公車資料介接「交通部TDX平臺」
+            <img src="{{ url_for('static', filename='tdxlogo.png') }}" alt="TDX 標章"
+                style="vertical-align: middle; height:32px;"><br>
+            天氣資料介接「交通部中央氣象署-氣象資料開放平臺」
+        </p>
+    </footer>
+</body>
+
+</html>

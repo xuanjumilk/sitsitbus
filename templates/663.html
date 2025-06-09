@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}663公車路線{% endblock %}
+{% block content %}
+        <main>
+            <div class="businfo-title">663</div>
+            <div class="direction-area">
+                <button id="direction-go" type="button" class="direction-btn active">往國父紀念館</button>
+                <button id="direction-back" type="button" class="direction-btn">往新莊</button>
+            </div>
+            <div class="map_container">
+                <div class="route-map" id="route-map"></div>
+            </div>
+        </main>
+    
+        <script>
+        const allStopNames = {
+            "663": {
+                "0": [// To National Dr. Sun Yat-sen Memorial Hall (往國父紀念館)
+                    ["head","民安站", "民安國小", "福祿新城二", "福祿新城一", "光華國小(龍安路)", "龍安大第", "萬安公園", "裕民國小", "right_down"], 
+                    ["left_down","營盤口", "三洋", "捷運丹鳳站", "雙鳳富國路口", "丹鳳國小", "中正龍安路口", "丹鳳高中","down_left"], 
+                    ["down_right","捷運輔大站", "盲人重建院", "海山里", "新泰路口", "捷運新莊站(新莊郵局)", "新莊國小", "保元宮","right_down"],
+                    ["left_down", "重新大橋", "五谷王廟", "捷運先嗇宮站", "中興街口", "金陵女中", "頭前", "捷運頭前庄站","down_left"],
+                    ["down_right","祖師廟(貴陽)", "貴陽街", "東吳大學城中校區", "一女中(貴陽)", "一女中(公園)", "市立大學附小", "南門","right_down"],
+                    ["left_down","溫州街口", "師大綜合大樓", "師大", "捷運古亭站(和平)", "南昌家具街", "聯合醫院婦幼院區一", "自來水西分處(寧波)","down_left"],
+                    ["down_right","大安森林公園", "龍門國中(和平)", "復興南路口", "國立臺北教育大學", "臥龍街", "全安里", "立人國際國中小學","right_down"],
+                    ["space","tail","交通部觀光署", "阿波羅大廈", "捷運忠孝敦化站", "敦化安和路口", "仁愛國中", "捷運信義安和站(安和)", "文昌街口","down_left"],
+                ],
+                "1": [// To Xinzhuang (往新莊)
+                    ["head","國父紀念館", "仁愛延吉街口", "仁愛國泰醫院", "仁愛安和路口", "仁愛安和路口", "仁愛國小", "捷運信義安和站(安和)", "文昌街口", "right_down"], 
+                    ["left_down", "國北教大實小", "復興南路口", "國立臺北教育大學", "臥龍街", "安和路口", "全安里", "立人國際國中小學","down_left"], 
+                    ["down_right","龍門國中(和平)", "大安森林公園", "溫州街口", "師大綜合大樓", "師大", "捷運古亭站(和平)", "南昌家具街","right_down"],
+                    ["left_down", "西門市場(成都)", "衡陽路", "一女中(貴陽)", "一女中(公園)", "南門", "南昌路", "聯合醫院婦幼院區一","down_left"],
+                    ["down_right","西門國小", "重新大橋", "五谷王廟", "捷運先嗇宮站", "中興街口", "金陵女中", "頭前","right_down"],
+                    ["left_down","捷運輔大站", "盲人重建院", "海山里", "新泰路口", "捷運新莊站(新莊郵局)", "大眾廟", "捷運頭前庄站","down_left"],
+                    ["down_right","營盤口", "三洋", "捷運丹鳳站", "雙鳳富國路口", "丹鳳國小", "中正龍安路口", "丹鳳高中","right_down"],
+                    ["tail","民安站", "民安國小", "福祿新城二", "福祿新城一", "光華國小(龍安路)", "龍安大第", "萬安公園", "裕民國小","down_left"],                    
+                ]
+            }
+        };
+
+        let currentRoute = "663";
+        let currentDirection = "0";
+        let intervalId = null;
+
+        </script>
+        
+        <script src="{{ url_for('static', filename='bus_route_common.js') }}"></script>
+
+        <script>
+        document.getElementById('direction-go').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("663", "0", true);
+                startAutoUpdate();
+            }
+        });
+        document.getElementById('direction-back').addEventListener('click', function() {
+            if (!this.classList.contains('active')) {
+                fetchEta("663", "1", true);
+                startAutoUpdate();
+            }
+        });
+
+        // 預設載入去程
+        fetchEta("663", "0", true);
+        startAutoUpdate();
+        </script>
+{% endblock %}
