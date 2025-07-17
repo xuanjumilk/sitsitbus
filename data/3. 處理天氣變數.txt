@@ -1,0 +1,28 @@
+-- 處理天氣變數
+use database;
+DELETE FROM table_name WHERE EstimateTime IS NULL;
+-- 處理weather_data
+ALTER TABLE table_name
+ADD COLUMN rain FLOAT,
+ADD COLUMN temp FLOAT,
+ADD COLUMN wind FLOAT,
+ADD COLUMN weather_hour DATETIME;
+
+UPDATE table_name
+SET weather_hour = DATE_FORMAT(
+   STR_TO_DATE(SUBSTRING_INDEX(r_time, '+', 1), '%Y-%m-%d %H:%i:%s'),
+ '%Y-%m-%d %H:00:00'
+ );
+
+UPDATE table_name AS s
+JOIN weather_data AS w
+  ON s.weather_hour = STR_TO_DATE(w.record_time, '%Y/%m/%d %H:%i:%s')
+SET 
+  s.rain = w.rain,
+  s.temp = w.temp,
+  s.wind = w.wind;
+
+DELETE FROM table_name WHERE rain IS NULL;
+ALTER TABLE table_name DROP COLUMN weather_hour,
+drop column rn,
+drop column rn1

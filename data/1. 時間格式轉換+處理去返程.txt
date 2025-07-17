@@ -1,0 +1,13 @@
+-- 時間格式轉換+處理去返程
+ALTER TABLE table_name ADD COLUMN ParsedTime DATETIME;
+UPDATE table_name
+SET ParsedTime = STR_TO_DATE(SUBSTRING_INDEX(SrcUpdateTime, '+', 1), '%Y-%m-%dT%H:%i:%s')
+WHERE ParsedTime IS NULL;
+
+UPDATE table_name
+SET Direction = CASE
+    WHEN Direction = '去程' THEN 0
+    WHEN Direction = '返程' THEN 1
+    ELSE Direction
+END;
+

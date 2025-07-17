@@ -1,0 +1,27 @@
+-- 合併資料庫(站牌)
+use database;
+CREATE TABLE table_name (
+    RouteUID varchar(255) ,
+	StopNameZh_tw varchar(255) ,
+	StopNameEn varchar(255) ,
+	StopUID varchar(255) ,
+	Direction int ,
+	PlateNumb varchar(255) ,
+	Speed double ,
+	DutyStatus int, 
+	BusStatus int ,
+	PositionLon double ,
+	PositionLat double ,
+	r_time datetime ,
+	e_time datetime ,
+    rt_delay_sec bigint,
+	EstimateTime int ,
+    actual_time datetime,
+    true_arrival_sec bigint,
+    diff_time bigint,
+	rain float ,
+	temp float ,
+	wind float ,
+	peak varchar(10) ,
+	daytype varchar(10)
+);

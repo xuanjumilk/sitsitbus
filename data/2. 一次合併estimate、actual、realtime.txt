@@ -1,0 +1,66 @@
+-- 一次合併estimate、actual、realtime
+use database;
+create table newfinal as
+WITH matched_actual AS (
+    SELECT
+        a.RouteUID,
+        a.PlateNumb,
+        a.Direction,
+        a.StopUID,
+        a.StopNameZh_tw,
+        a.StopNameEn,
+        e.ParsedTime AS e_time,
+        e.EstimateTime,
+		a.ParsedTime AS actual_time,
+        TIMESTAMPDIFF(SECOND, e.ParsedTime, a.ParsedTime) AS true_arrival_sec,
+        
+        ROW_NUMBER() OVER (
+            PARTITION BY e.ParsedTime, e.StopUID, e.Direction
+            ORDER BY a.ParsedTime ASC
+        ) AS rn
+
+    FROM bus_estimate_time e
+    LEFT JOIN table_name a
+      ON e.StopUID = a.StopUID
+     AND e.Direction = a.Direction
+     AND a.ParsedTime > e.ParsedTime
+     AND a.StopNameZh_tw = '師大綜合大樓'
+     AND a.A2EventType = '進站'
+    WHERE
+        e.StopName_Zh_tw = '師大綜合大樓'
+),
+filtered_estimate AS (
+    -- 過濾掉預估與實際差距過大的資料（異常）
+    SELECT *
+    FROM matched_actual
+    WHERE rn = 1
+      AND ABS(EstimateTime - true_arrival_sec) <= 1000
+),
+
+realtime_matched AS (
+    -- 根據 estimate_time + PlateNumb，找時間最接近的即時資料（±30 秒）
+    SELECT
+        f.*,
+        r.ParsedTime as r_time,
+        r.Speed,
+        r.PositionLat,
+        r.PositionLon,
+        r.BusStatus,
+        r.DutyStatus,
+        TIMESTAMPDIFF(SECOND, r.ParsedTime, f.e_time) AS rt_delay_sec,
+        ROW_NUMBER() OVER (
+            PARTITION BY f.e_time, f.PlateNumb
+            ORDER BY ABS(TIMESTAMPDIFF(SECOND, r.ParsedTime, f.e_time))
+        ) AS rn1
+    FROM filtered_estimate f
+    LEFT JOIN bus_realtime_position r
+      ON r.RouteUID = f.RouteUID
+     AND r.Direction = f.Direction
+     AND r.PlateNumb = f.PlateNumb
+     AND ABS(TIMESTAMPDIFF(SECOND, r.ParsedTime, f.e_time)) <= 45
+)
+
+-- 最終輸出資料
+SELECT *
+FROM realtime_matched
+WHERE rn1 = 1;

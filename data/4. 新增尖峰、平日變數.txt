@@ -1,0 +1,23 @@
+-- 新增尖峰、平日變數
+use database;
+ALTER TABLE table_name
+ADD COLUMN peak VARCHAR(10),
+ADD COLUMN daytype VARCHAR(10);
+
+UPDATE table_name
+SET peak = CASE
+WHEN (TIME(STR_TO_DATE(SUBSTRING_INDEX(r_time, '+', 1), '%Y-%m-%d %H:%i:%s')) BETWEEN '07:00:00' AND '09:00:00')
+OR (TIME(STR_TO_DATE(SUBSTRING_INDEX(r_time, '+', 1), '%Y-%m-%d %H:%i:%s')) BETWEEN '17:00:00' AND '19:00:00')
+THEN '1'  -- 尖峰
+ELSE '0'  -- 離峰
+END;
+
+UPDATE table_name
+SET daytype = CASE
+  WHEN DATE(STR_TO_DATE(SUBSTRING_INDEX(r_time, '+', 1), '%Y-%m-%d %H:%i:%s')) BETWEEN '2025-05-06' AND '2025-05-09' THEN '1'
+  WHEN DATE(STR_TO_DATE(SUBSTRING_INDEX(r_time, '+', 1), '%Y-%m-%d %H:%i:%s')) BETWEEN '2025-05-10' AND '2025-05-11' THEN '0'
+  WHEN DATE(STR_TO_DATE(SUBSTRING_INDEX(r_time, '+', 1), '%Y-%m-%d %H:%i:%s')) BETWEEN '2025-05-12' AND '2025-05-16' THEN '1'
+  WHEN DATE(STR_TO_DATE(SUBSTRING_INDEX(r_time, '+', 1), '%Y-%m-%d %H:%i:%s')) BETWEEN '2025-05-17' AND '2025-05-18' THEN '0'
+  WHEN DATE(STR_TO_DATE(SUBSTRING_INDEX(r_time, '+', 1), '%Y-%m-%d %H:%i:%s')) BETWEEN '2025-05-19' AND '2025-05-21' THEN '1'
+  ELSE '0'
+END;

@@ -1,0 +1,27 @@
+-- 插入資料庫
+insert into table_name
+select
+    RouteUID,
+	StopNameZh_tw,
+	StopNameEn,
+	StopUID,
+	Direction,
+	PlateNumb,
+	Speed,
+	DutyStatus, 
+	BusStatus,
+	PositionLon,
+	PositionLat,
+	r_time,
+	e_time,
+    rt_delay_sec,
+	EstimateTime,
+    actual_time,
+    true_arrival_sec,
+    EstimateTime - true_arrival_sec as diff_time,
+	rain,
+	temp,
+	wind,
+	peak,
+	daytype
+from table_name_1;
